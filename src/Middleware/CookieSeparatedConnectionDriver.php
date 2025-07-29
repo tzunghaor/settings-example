@@ -5,15 +5,17 @@ namespace App\Middleware;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Middleware\AbstractDriverMiddleware;
-use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Create new database for each session, delete old databases.
+ * Create new database for each client identified by a cookie, delete old databases.
+ * (Cannot use session id, because Symfony likes to destroy that on authentication events.)
  * This works only with this app (sqlite with 'user' table expected, seed file location hardwired )
  */
-class SessionSeparatedConnectionDriver extends AbstractDriverMiddleware
+class CookieSeparatedConnectionDriver extends AbstractDriverMiddleware
 {
+    public const COOKIE_NAME = 'db_unique_id';
+
     public function __construct(
         private readonly RequestStack $requestStack,
         Driver $wrappedDriver
@@ -24,14 +26,13 @@ class SessionSeparatedConnectionDriver extends AbstractDriverMiddleware
 
     public function connect(array $params): Connection
     {
-        try {
-            $session = $this->requestStack->getSession();
-            $sessionId = $session->getId();
-        } catch (SessionNotFoundException) {
-            $sessionId = '';
-        }
+        $request = $this->requestStack->getCurrentRequest();
+        $uniqueId = $request->cookies->get(self::COOKIE_NAME) ?? uniqid();
+        // cookie will be actually set in response in App\EventSubscriber\KernelSubscriber
+        $request->cookies->set(self::COOKIE_NAME, $uniqueId);
+
         $dbPathPattern = $params['path'];
-        $params['path'] = str_replace('sessionId', $sessionId, $dbPathPattern);
+        $params['path'] = str_replace('uniqueId', $uniqueId, $dbPathPattern);
         $dbDir = dirname($params['path']);
 
         if (!file_exists($dbDir)) {
@@ -48,7 +49,7 @@ class SessionSeparatedConnectionDriver extends AbstractDriverMiddleware
             $connection->exec($sql);
 
             // keep only freshest N databases
-            $globPattern = str_replace('sessionId', '*', $dbPathPattern);
+            $globPattern = str_replace('uniqueId', '*', $dbPathPattern);
             $existingDbs = [];
             foreach (glob($globPattern) as $path) {
                 $existingDbs[] = ['path' => $path, 'mtime' => filemtime($path)];

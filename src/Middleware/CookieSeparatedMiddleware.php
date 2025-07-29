@@ -7,10 +7,10 @@ use Doctrine\DBAL\Driver\Middleware;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Create new database for each session
- * @see SessionSeparatedConnectionDriver
+ * Create new database for each client identified by a cookie
+ * @see CookieSeparatedConnectionDriver
  */
-class SessionSeparatedMiddleware implements Middleware
+class CookieSeparatedMiddleware implements Middleware
 {
     public function __construct(
         private readonly RequestStack $requestStack,
@@ -19,6 +19,6 @@ class SessionSeparatedMiddleware implements Middleware
 
     public function wrap(Driver $driver): Driver
     {
-        return new SessionSeparatedConnectionDriver($this->requestStack, $driver);
+        return new CookieSeparatedConnectionDriver($this->requestStack, $driver);
     }
 }

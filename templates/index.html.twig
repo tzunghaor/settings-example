@@ -6,7 +6,35 @@
 {% block body %}
     <div class="container">
         <div class="header">
-            Top Area
+            <h1>
+                Example application for
+                <a href="https://github.com/tzunghaor/settings-bundle">tzunghaor/settings-bundle</a>
+            </h1>
+
+            <p>
+                The source code of this example is <a href="https://github.com/tzunghaor/settings-example">here</a>
+            </p>
+
+            <p>
+                Below are two iframes. The left contains a page in this application, the right contains the
+                settings editor provided tzunghaor/settings-bundle and customised in this app. This way you can
+                see your settings and their effect side by side. After you change the settings, you have to reload
+                the left iframe (or the whole page) for your changes to take effect.
+            </p>
+
+            <div class="auth">
+                {% if app.user %}
+                    Logged in user <string>{{ app.user.userIdentifier }}</string>.
+                    [ <a href="/login/">Log out</a> ]
+                {% else %}
+                    Not logged in.
+                {% endif %}
+
+                - Login as user:
+                {% for userId,loginLink in loginLinks %}
+                    [ <a href="{{ loginLink }}">{{ userId }}</a> ]
+                {% endfor %}
+            </div>
         </div>
         <div class="iframes">
             <iframe src="{{ path('example') }}"></iframe>
@@ -34,17 +62,34 @@
         }
 
         .header {
-            height: 100px;
-            display: flex;
-            font-size: 1.5em;
             padding: 1em;
+        }
+
+        .header h1 {
+            font-size: 180%;
+            margin: 0 0 0.5em 0;
+        }
+
+        .header a {
+            color: #8ac2d5;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .header a:hover {
+            color: white;
+        }
+
+        .auth {
+            padding-top: 1em;
+            border-top: 1px dashed white;
         }
 
         .iframes {
             flex: 1;
             display: flex;
             gap: 1em;
-            padding: 1em;
+            padding: 0 1em;
         }
 
         iframe {

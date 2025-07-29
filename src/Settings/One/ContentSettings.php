@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Settings;
+namespace App\Settings\One;
 
 use App\Form\MessageType;
 use App\Model\Message;

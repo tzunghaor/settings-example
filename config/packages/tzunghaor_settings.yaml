@@ -1,8 +1,9 @@
 tzunghaor_settings:
 #  security: true
   collections:
+    # default collection based on time of day
     default:
-      title: Default Settings
+      title: Time of day
       extra:
         color: '#ffaa88'
       default_scope: day
@@ -11,10 +12,21 @@ tzunghaor_settings:
           title: Daytime
           children:
             - name: morning
-              title: Superb Morning
+              title: From Dawn till Noon
             - name: afternoon
+              title: From Noon till Dusk
         - name: night
+          title: Night
+      mapping:
+        dir: '%kernel.project_dir%/src/Settings/One'
+        prefix: App\Settings\One\
+
+    # project collection: default settings per user overridable per project
+    project:
+      title: Project
+      scope_provider: 'App\Service\ProjectScopeProvider'
       mappings:
+        # We can use the same settings classes for multiple collections
         default:
-          dir: '%kernel.project_dir%/src/Settings'
-          prefix: App\Settings\
+          dir: '%kernel.project_dir%/src/Settings/One'
+          prefix: App\Settings\One\

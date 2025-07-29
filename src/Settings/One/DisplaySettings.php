@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Settings;
+namespace App\Settings\One;
 
 use App\Form\CustomIntType;
 use Symfony\Component\Form\Extension\Core\Type\ColorType;
