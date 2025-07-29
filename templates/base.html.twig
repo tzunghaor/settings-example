@@ -2,16 +2,54 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <title>{% block title %}Tzunghaor Settings Example{% endblock %}</title>
         {% block stylesheets %}
+            <style>
+                .header {
+                    margin-bottom: 0.5em;
+                    display: flex;
+                    gap: 0.5em;
+                }
+
+                .header .url, .header a {
+                    padding: 0.2em 0.5em;
+                    border: 1px solid #114455;
+                }
+
+                .header .url {
+                    flex-grow: 1;
+                }
+
+                .header a {
+                    background: #114455;
+                    text-decoration: none;
+                    color: #ffffff;
+                }
+
+                .explanation {
+                    margin-bottom: 1em;
+                    color: grey;
+                    font-size: 90%;
+                }
+            </style>
         {% endblock %}
 
         {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
     <body>
+        {% block header %}
+            <div class="header">
+                <div class="url">
+                    {{ path(app.current_route, app.current_route_parameters) }}
+                </div>
+                <a href="{{ path(app.current_route, app.current_route_parameters) }}">Reload</a>
+            </div>
+        {% endblock %}
+
+        {% block explanation %}
+        {% endblock %}
+
         {% block body %}{% endblock %}
     </body>
 </html>

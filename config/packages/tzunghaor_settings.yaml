@@ -1,0 +1,20 @@
+tzunghaor_settings:
+#  security: true
+  collections:
+    default:
+      title: Default Settings
+      extra:
+        color: '#ffaa88'
+      default_scope: day
+      scopes:
+        - name: day
+          title: Daytime
+          children:
+            - name: morning
+              title: Superb Morning
+            - name: afternoon
+        - name: night
+      mappings:
+        default:
+          dir: '%kernel.project_dir%/src/Settings'
+          prefix: App\Settings\

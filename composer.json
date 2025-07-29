@@ -9,6 +9,7 @@
         "ext-iconv": "*",
         "doctrine/doctrine-bundle": "*",
         "doctrine/orm": "*",
+        "symfony/asset": "7.2.*",
         "symfony/console": "7.2.*",
         "symfony/doctrine-bridge": "7.2.*",
         "symfony/dotenv": "7.2.*",

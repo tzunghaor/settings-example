@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block header %}
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="header">
+            Top Area
+        </div>
+        <div class="iframes">
+            <iframe src="{{ path('example') }}"></iframe>
+            <iframe src="{{ path('tzunghaor_settings_edit') }}"></iframe>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block stylesheets %}
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+            background-color: #114455;
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            max-width: 100em;
+            margin: auto;
+        }
+
+        .header {
+            height: 100px;
+            display: flex;
+            font-size: 1.5em;
+            padding: 1em;
+        }
+
+        .iframes {
+            flex: 1;
+            display: flex;
+            gap: 1em;
+            padding: 1em;
+        }
+
+        iframe {
+            flex: 1;
+            border: none;
+            background-color: white;
+        }
+    </style>
+{% endblock %}

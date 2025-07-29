@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+{% use "@TzunghaorSettings/editor_blocks.html.twig" %}
+{% set ts_messages=app.flashes %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ block('ts_stylesheets') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ block('ts_javascripts') }}
+{% endblock %}
+
+{% block body %}
+    {{ block('ts_body') }}
+{% endblock %}
+
+{% block explanation %}
+    <div class="explanation">
+        This is the editor page from tzunghaor/settings-bundle customized in tzunghaor/settings-example with
+        templates/bundles/TzunghaorSettingsBundle/editor_page.html.twig
+    </div>
+{% endblock %}
