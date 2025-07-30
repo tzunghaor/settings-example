@@ -13,3 +13,18 @@ INSERT INTO "project" ("name", "owner_id") VALUES
     ('a-foo', 'Alice'),
     ('b-bar', 'Bob'),
     ('b-foo', 'Bob');
+
+INSERT INTO "persisted_setting" ("scope", "path", "value") VALUES
+    ('afternoon', 'ContentSettings.messages', '["info|The afternoon is uneventful."]'),
+    ('afternoon', 'DisplaySettings.borders', '["bottom","top"]'),
+    ('day', 'ContentSettings.title', 'Happy Day'),
+    ('day', 'DisplaySettings.borders', '["left","right"]'),
+    ('day', 'DisplaySettings.padding', '30'),
+    ('morning', 'ContentSettings.messages', '["success|Successfully woke up!","error|It is too early!"]'),
+    ('morning', 'DisplaySettings.backgroundColor', '#f5f2bc'),
+    ('morning', 'DisplaySettings.textColor', '#921601'),
+    ('night', 'ContentSettings.messages', '["success|Was in a great party.","error|Very tired.","info|ZZZZZZ"]'),
+    ('night', 'ContentSettings.title', 'Good night'),
+    ('night', 'DisplaySettings.backgroundColor', '#011e3d'),
+    ('night', 'DisplaySettings.padding', '10'),
+    ('night', 'DisplaySettings.textColor', '#f2fcff');
