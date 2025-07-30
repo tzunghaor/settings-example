@@ -7,17 +7,43 @@
 {% endblock %}
 
 {% block body %}
-    {% if app.user %}
-        <h3>
+    {% if currentProject %}
+        {% set currentProjectName = currentProject.name %}
+    {% else %}
+        {% set currentProjectName = '' %}
+    {% endif %}
+
+    <h3>
+        {% if app.user %}
             Hi, {{ app.user.userIdentifier }}!
+        {% endif %}
+        The "current" time is <strong>{{ timeString }}</strong>.
+        {% if projects %}
             {% if currentProject %}
                 You are in project "{{ currentProject.name }}".
             {% else %}
                 You did not choose a project.
             {% endif %}
-        </h3>
-    {% endif %}
+        {% endif %}
+    </h3>
 
+    <p class="explanation">
+        The "current" time affects which scope of the "default" (a.k.a. "Time of Day") collection is used for the
+        first box under the horizontal line.
+    </p>
+    <p>
+        Pretend that it is:
+        {% for timeString in ['09:30', '14:30', '23:30'] %}
+            [ <a href="{{ path('set_time', { 'timeString': timeString, 'project': currentProjectName }) }}">
+            {{ timeString }}
+        </a> ]
+        {% endfor %}
+    </p>
+
+    <p class="explanation">
+        The chosen project affects which scope of the "project" collection is used for the second box under the
+        horizontal line. If there is no logged-in user, or no project is chosen, then the second box is not shown.
+    </p>
     {% if projects %}
     <div>
         Choose project:
@@ -31,12 +57,14 @@
                 <a href="{{ path('example', { 'project': project.name }) }}">
                     {{ project.name }}
                 </a>
-                {% if currentProject and project.name == currentProject.name %}<<<{% endif %}
+                {% if currentProject and project.name == currentProjectName %}<<<{% endif %}
             </li>
             {% endfor %}
         </ul>
     </div>
     {% endif %}
+
+    <hr>
 
     {% for collectionName,box in boxes %}
         <div class="box_wrapper">
@@ -75,7 +103,8 @@
 
         {% for collectionName,box in boxes %}
             .{{ collectionName }}_box {
-                background: #EEEEEE;
+                background: {{ box.display.backgroundColor }};
+                color: {{ box.display.textColor }};
                 padding: {{ box.display.padding }}pt;
                 margin: {{ box.display.margin }}pt;
                 {% for which in box.display.borders %}
@@ -94,16 +123,19 @@
         .message_info {
             background: lightblue;
             border-color: darkblue;
+            color: darkblue;
         }
 
         .message_success {
             background: lightgreen;
             border-color: darkgreen;
+            color: darkgreen;
         }
 
         .message_error {
             background: pink;
             border-color: darkred;
+            color: darkred;
         }
     </style>
 {% endblock %}

@@ -9,12 +9,15 @@ use App\Settings\One\DisplaySettings;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Tzunghaor\SettingsBundle\Service\SettingsService;
 
 class AppController extends AbstractController
 {
+    private const SESSION_KEY_TIME = 'time';
+
     #[Route(path: '/', name: 'index')]
     public function index(
         EntityManagerInterface $em
@@ -71,14 +74,31 @@ class AppController extends AbstractController
     #[Route(path: '/example/{project}', name: 'example', defaults: ['project' => null])]
     public function example(
         ?Project $project,
+        Request $request,
         SettingsService $defaultSettingsService,
         SettingsService $projectSettingsService,
         EntityManagerInterface $em,
     ): Response {
+        // The 'default' collection's label is 'Time of Day' - let's determine which scope of it should we use
+        $session = $request->getSession();
+        $timeString = $session->has(self::SESSION_KEY_TIME) ? $session->get(self::SESSION_KEY_TIME) : 'now';
+        $time = new \DateTime($timeString, new \DateTimeZone('UTC'));
+        $timeOfDayScope = 'night';
+        $timeString = $time->format('H:i');
+        $session->set(self::SESSION_KEY_TIME, $timeString);
+        if ($timeString > '06:00') {
+            if ($timeString < '12:00') {
+                $timeOfDayScope = 'morning';
+            } elseif ($timeString < '18:00') {
+                $timeOfDayScope = 'afternoon';
+            }
+        }
+
+        $defaultCollectionAddress = $defaultSettingsService->getSectionAddress(DisplaySettings::class);
         $boxes = [
-            'default' => [
-                'display' => $defaultSettingsService->getSection(DisplaySettings::class),
-                'content' => $defaultSettingsService->getSection(ContentSettings::class),
+             'default' => [
+                'display' => $defaultSettingsService->getSection(DisplaySettings::class, $timeOfDayScope),
+                'content' => $defaultSettingsService->getSection(ContentSettings::class, $timeOfDayScope),
             ],
         ];
 
@@ -107,6 +127,15 @@ class AppController extends AbstractController
             'boxes' => $boxes,
             'currentProject' => $project,
             'projects' => $projects,
+            'timeString' => $timeString,
         ]);
+    }
+
+    #[Route(path: '/set-time/{timeString}/{project}', name: 'set_time', defaults: ['project' => null])]
+    public function setTime(string $timeString, ?string $project, Request $request): Response
+    {
+        $request->getSession()->set(self::SESSION_KEY_TIME, $timeString);
+
+        return $this->redirectToRoute('example', ['project' => $project]);
     }
 }

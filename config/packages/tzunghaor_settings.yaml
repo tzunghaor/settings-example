@@ -3,7 +3,7 @@ tzunghaor_settings:
   collections:
     # default collection based on time of day
     default:
-      title: Time of day
+      title: Time of Day
       extra:
         color: '#ffaa88'
       default_scope: day

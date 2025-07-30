@@ -37,8 +37,8 @@
             </div>
         </div>
         <div class="iframes">
-            <iframe src="{{ path('example') }}"></iframe>
-            <iframe src="{{ path('tzunghaor_settings_edit', {'collection': collection}) }}"></iframe>
+            <iframe id="example_frame" src="{{ path('example') }}"></iframe>
+            <iframe id="editor_frame" src="{{ path('tzunghaor_settings_edit', {'collection': collection}) }}"></iframe>
         </div>
     </div>
 {% endblock %}
@@ -93,9 +93,16 @@
         }
 
         iframe {
-            flex: 1;
             border: none;
             background-color: white;
+        }
+
+        iframe#example_frame {
+            flex: 2;
+        }
+
+        iframe#editor_frame {
+            flex: 3;
         }
     </style>
 {% endblock %}

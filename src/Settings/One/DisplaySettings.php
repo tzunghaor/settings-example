@@ -15,20 +15,21 @@ class DisplaySettings
     #[Assert\LessThanOrEqual(30, message: "maximum accepted padding is {{ compared_value }} pt")]
     #[Setting(
         label: "Padding",
-        help: "Padding in points.",
-        formOptions: ["attr" => ["style" => "border: 5px solid orange;"]]
+        help: "Padding in points. (Orange input border defined in formOptions)",
+        formOptions: ["attr" => ["style" => "border: 5px solid orange;"]],
     )]
     private int $padding;
 
+    // Extracting help text from docblock works only if phpdocumentor/reflection-docblock is installed.
     /**
      * Margin
      *
      * Margin in points.
-     * I think you already understand how this help text works.
+     * (Yellow input border is defined in CustomIntType)
      */
     #[Setting(
         dataType: "int",
-        formType: CustomIntType::class
+        formType: CustomIntType::class,
     )]
     #[Assert\PositiveOrZero]
     #[Assert\LessThanOrEqual(30, message: "maximum accepted margin is {{ compared_value }} pt")]
@@ -40,6 +41,12 @@ class DisplaySettings
     #[Setting(enum: ["bottom", "top", "left", "right"])]
     private array $borders;
 
+    #[Setting(label: 'Background Color', formType: ColorType::class)]
+    private string $backgroundColor;
+
+    #[Setting(label: 'Text Color', formType: ColorType::class)]
+    private string $textColor;
+
     /**
      * Border Color
      */
@@ -47,12 +54,20 @@ class DisplaySettings
     private string $borderColor;
 
 
-    public function __construct(int $padding = 0, int $margin = 0, array $borders = [], string $borderColor = 'black')
-    {
+    public function __construct(
+        int    $padding = 0,
+        int    $margin = 0,
+        array  $borders = [],
+        string $backgroundColor = '#D2EBF5',
+        string $textColor = 'black',
+        string $borderColor = 'black'
+    ) {
         $this->padding = $padding;
         $this->margin = $margin;
         $this->borders = $borders;
         $this->borderColor = $borderColor;
+        $this->backgroundColor = $backgroundColor;
+        $this->textColor = $textColor;
     }
 
 
@@ -72,6 +87,16 @@ class DisplaySettings
     public function getBorders(): array
     {
         return $this->borders;
+    }
+
+    public function getBackgroundColor(): string
+    {
+        return $this->backgroundColor;
+    }
+
+    public function getTextColor(): string
+    {
+        return $this->textColor;
     }
 
     public function getBorderColor(): string
