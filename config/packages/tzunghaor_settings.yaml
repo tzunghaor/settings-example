@@ -1,5 +1,5 @@
 tzunghaor_settings:
-#  security: true
+  security: true
   collections:
     # default collection based on time of day
     default:

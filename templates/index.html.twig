@@ -12,19 +12,19 @@
             </h1>
 
             <p>
-                The source code of this example is <a href="https://github.com/tzunghaor/settings-example">here</a>
+                The source code of this example is <a href="https://github.com/tzunghaor/settings-example">here</a>.
             </p>
 
             <p>
                 Below are two iframes. The left contains a page in this application, the right contains the
-                settings editor provided tzunghaor/settings-bundle and customised in this app. This way you can
+                settings editor provided by tzunghaor/settings-bundle and customised in this app. This way you can
                 see your settings and their effect side by side. After you change the settings, you have to reload
                 the left iframe (or the whole page) for your changes to take effect.
             </p>
 
             <div class="auth">
                 {% if app.user %}
-                    Logged in user <string>{{ app.user.userIdentifier }}</string>.
+                    Logged in user: <strong>{{ app.user.userIdentifier }}</strong>.
                     [ <a href="/login/">Log out</a> ]
                 {% else %}
                     Not logged in.
@@ -38,7 +38,7 @@
         </div>
         <div class="iframes">
             <iframe src="{{ path('example') }}"></iframe>
-            <iframe src="{{ path('tzunghaor_settings_edit') }}"></iframe>
+            <iframe src="{{ path('tzunghaor_settings_edit', {'collection': collection}) }}"></iframe>
         </div>
     </div>
 {% endblock %}
@@ -71,7 +71,7 @@
         }
 
         .header a {
-            color: #8ac2d5;
+            color: #b6dfee;
             font-weight: bold;
             text-decoration: none;
         }

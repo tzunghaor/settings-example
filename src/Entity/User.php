@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -12,6 +14,13 @@ class User implements UserInterface
     #[ORM\Column(type: "string")]
     private string $id;
 
+    #[ORM\OneToMany(targetEntity: Project::class, mappedBy: 'owner')]
+    private Collection $projects;
+
+    public function __construct() {
+        $this->projects = new ArrayCollection();
+    }
+
     public function getId(): string
     {
         return $this->id;
@@ -20,6 +29,11 @@ class User implements UserInterface
     public function setId(string $id): void
     {
         $this->id = $id;
+    }
+
+    public function getProjects(): Collection
+    {
+        return $this->projects;
     }
 
     public function getRoles(): array

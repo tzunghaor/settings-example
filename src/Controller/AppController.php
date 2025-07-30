@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Project;
 use App\Entity\User;
 use App\Settings\One\ContentSettings;
 use App\Settings\One\DisplaySettings;
@@ -15,16 +16,31 @@ use Tzunghaor\SettingsBundle\Service\SettingsService;
 class AppController extends AbstractController
 {
     #[Route(path: '/', name: 'index')]
-    public function index(EntityManagerInterface $em): Response
-    {
+    public function index(
+        EntityManagerInterface $em
+    ): Response {
         $users = $em->getRepository(User::class)->findAll();
         $loginLinks = [];
         foreach ($users as $user) {
             $loginLinks[$user->getUserIdentifier()] = '/login/' . $user->getUserIdentifier();
         }
 
+        // determine initial collection for edit settings iframe
+        $roles = $this->getUser()?->getRoles();
+        if (empty($roles)) {
+            // no logged in user => no collection, results in empty editor
+            $collection = null;
+        } elseif (in_array('ROLE_ADMIN', $roles)) {
+            // admin => no collection, results in 'default' collection selected
+            $collection = null;
+        } else {
+            // non admin user has permission only ro 'project' collection
+            $collection = 'project';
+        }
+
         return $this->render('index.html.twig', [
             'loginLinks' => $loginLinks,
+            'collection' => $collection,
         ]);
     }
 
@@ -52,10 +68,12 @@ class AppController extends AbstractController
     }
 
 
-    #[Route(path: '/example', name: 'example')]
+    #[Route(path: '/example/{project}', name: 'example', defaults: ['project' => null])]
     public function example(
+        ?Project $project,
         SettingsService $defaultSettingsService,
         SettingsService $projectSettingsService,
+        EntityManagerInterface $em,
     ): Response {
         $boxes = [
             'default' => [
@@ -64,16 +82,31 @@ class AppController extends AbstractController
             ],
         ];
 
-        // there is no sensible default project scope without authenticated user
-        if ($this->getUser()) {
+        if ($project && $project->getOwner()->getId() !== $this->getUser()->getUserIdentifier()) {
+            return $this->redirectToRoute('example');
+        }
+
+        if ($project) {
             $boxes['project'] = [
-                'display' => $projectSettingsService->getSection(DisplaySettings::class),
-                'content' => $projectSettingsService->getSection(ContentSettings::class),
+                'display' => $projectSettingsService->getSection(DisplaySettings::class, $project),
+                'content' => $projectSettingsService->getSection(ContentSettings::class, $project),
             ];
+        }
+
+        if ($this->getUser()) {
+            $projects = $em
+                ->createQuery('SELECT p FROM App\Entity\Project p JOIN p.owner u WHERE u.id = :userId ORDER BY p.name')
+                ->setParameter('userId', $this->getUser()->getUserIdentifier())
+                ->getResult()
+            ;
+        } else {
+            $projects = null;
         }
 
         return $this->render('example.html.twig', [
             'boxes' => $boxes,
+            'currentProject' => $project,
+            'projects' => $projects,
         ]);
     }
 }

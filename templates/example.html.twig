@@ -7,32 +7,79 @@
 {% endblock %}
 
 {% block body %}
-    {% for collectionName,box in boxes %}
-        <div class="{{ collectionName }}_box">
-            <div class="explanation">
-                The display and content of this box are controlled by the "{{ collectionName }}"
-                settings collection.
-            </div>
+    {% if app.user %}
+        <h3>
+            Hi, {{ app.user.userIdentifier }}!
+            {% if currentProject %}
+                You are in project "{{ currentProject.name }}".
+            {% else %}
+                You did not choose a project.
+            {% endif %}
+        </h3>
+    {% endif %}
 
-            <h3>{{ box.content.title }}</h3>
-            {% for message in box.content.messages %}
-                <div class="message message_{{ message.type }}">{{ message.text }}</div>
+    {% if projects %}
+    <div>
+        Choose project:
+        <ul>
+            <li>
+                -- <a href="{{ path('example') }}">NO PROJECT</a> --
+                {% if not currentProject %}<<<{% endif %}
+            </li>
+            {% for project in projects %}
+            <li>
+                <a href="{{ path('example', { 'project': project.name }) }}">
+                    {{ project.name }}
+                </a>
+                {% if currentProject and project.name == currentProject.name %}<<<{% endif %}
+            </li>
             {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% for collectionName,box in boxes %}
+        <div class="box_wrapper">
+            <div class="{{ collectionName }}_box">
+                <div class="explanation">
+                    The display and content of this box are controlled by the "{{ collectionName }}"
+                    settings collection.
+                </div>
+
+                <h3>{{ box.content.title }}</h3>
+                {% for message in box.content.messages %}
+                    <div class="message message_{{ message.type }}">{{ message.text }}</div>
+                {% endfor %}
+            </div>
         </div>
     {% endfor %}
+
 {% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
 
     <style>
+        a {
+            color: #114455;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .box_wrapper {
+            margin: 3em 0;
+        }
+
         {% for collectionName,box in boxes %}
             .{{ collectionName }}_box {
                 background: #EEEEEE;
                 padding: {{ box.display.padding }}pt;
                 margin: {{ box.display.margin }}pt;
                 {% for which in box.display.borders %}
-                    border-{{ which }}: 1px solid {{ box.display.borderColor }};
+                    border-{{ which }}: 4pt solid {{ box.display.borderColor }};
                 {% endfor %}
             }
         {% endfor %}

@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\Expr;
 use RuntimeException;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Entity\Project;
@@ -22,6 +23,9 @@ class ProjectScopeProvider implements ScopeProviderInterface
     ) {
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getScope(mixed $subject = null): Item
     {
         // return default scope name if $subject is null
@@ -44,6 +48,9 @@ class ProjectScopeProvider implements ScopeProviderInterface
         throw new \InvalidArgumentException('Cannot determine scope');
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getScopePath(mixed $subject = null): array
     {
         // get default scope name if $subject is null
@@ -70,16 +77,72 @@ class ProjectScopeProvider implements ScopeProviderInterface
         throw new \InvalidArgumentException('Cannot determine scope path');
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getScopeDisplayHierarchy(?string $searchString = null): array
     {
-        // todo: actually search, use roles
-        $users = $this->em->getRepository(User::class)->findAll();
+        $authenticatedUser = $this->security->getUser();
+        if (!$authenticatedUser || !in_array('ROLE_USER', $authenticatedUser->getRoles())) {
+            return [];
+        }
+
+        $likeExpr = empty($searchString) ? null : '%' . addcslashes($searchString, '%_') . '%';
+        $isAdmin = in_array('ROLE_ADMIN', $authenticatedUser->getRoles());
+
+        $query = $this->em->createQueryBuilder()
+            ->select(['p', 'u'])
+            ->from(User::class, 'u')
+            ->leftJoin('u.projects', 'p')
+            ->orderBy('u.id')
+            ->addOrderBy('p.name')
+        ;
+
+        if ($likeExpr) {
+            $query
+                ->andWhere('p.name LIKE :likeExpr OR u.id LIKE :likeExpr')
+                ->setParameter('likeExpr', $likeExpr)
+            ;
+        }
+        if (!$isAdmin) {
+            $query
+                ->andWhere('u.id = :userId')
+                ->setParameter('userId', $authenticatedUser->getUserIdentifier())
+            ;
+        }
+
+        $users = $query->getQuery()->getResult();
         $displayHierarchy = [];
+        /** @var User $user */
         foreach ($users as $user) {
-            $displayHierarchy[] = new Item(self::PREFIX_USER . '-' . $user->getId(), $user->getId());
+            $children = [];
+            foreach ($user->getProjects() as $project) {
+                $children[] = new Item(self::PREFIX_PROJECT . '-' . $project->getName(), $project->getName(), extra: [Item::EXTRA_EDITABLE => true]);
+            }
+
+            $displayHierarchy[] = new Item(self::PREFIX_USER . '-' . $user->getId(), $user->getId(), $children, [Item::EXTRA_EDITABLE => true]);
+
         }
 
         return $displayHierarchy;
+    }
+
+    /**
+     * Method for SettingsVoter to convert scope to an entity.
+     *
+     * We could instead implement IsGrantedSupportingScopeProviderInterface in this class, and make a Voter
+     * that votes directly on User|Project as $subject - but then we lose the possibility to vote based on
+     * settings section name (e.g. ContentSettings / DisplaySettings).
+     */
+    public function getObject(string $scope): User|Project|null
+    {
+        [$prefix, $identifier] = explode('-', $scope, 2);
+
+        return match ($prefix) {
+            self::PREFIX_USER => $this->em->find(User::class, $identifier),
+            self::PREFIX_PROJECT => $this->em->find(Project::class, $identifier),
+            default => null,
+        };
     }
 
     /**
