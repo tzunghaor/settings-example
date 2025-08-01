@@ -25,7 +25,7 @@
             <div class="auth">
                 {% if app.user %}
                     Logged in user: <strong>{{ app.user.userIdentifier }}</strong>.
-                    [ <a href="/login/">Log out</a> ]
+                    [ <a href="{{ path('login') }}">Log out</a> ]
                 {% else %}
                     Not logged in.
                 {% endif %}

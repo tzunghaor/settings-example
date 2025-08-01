@@ -25,7 +25,7 @@ class AppController extends AbstractController
         $users = $em->getRepository(User::class)->findAll();
         $loginLinks = [];
         foreach ($users as $user) {
-            $loginLinks[$user->getUserIdentifier()] = '/login/' . $user->getUserIdentifier();
+            $loginLinks[$user->getUserIdentifier()] = $this->generateUrl('login', ['userId' => $user->getUserIdentifier()]);
         }
 
         // determine initial collection for edit settings iframe
