@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9bdc08d53304ce88d781ea69b185b5ec",
+    "content-hash": "4b96e6605b7a923a6477ecebca8f6972",
     "packages": [
         {
             "name": "doctrine/collections",
@@ -5605,16 +5605,16 @@
         },
         {
             "name": "tzunghaor/settings-bundle",
-            "version": "0.16",
+            "version": "0.16.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tzunghaor/settings-bundle.git",
-                "reference": "d3edc9ba7e8adba48fdda9c24501184f17c6a8bb"
+                "reference": "51863166cb5c17059f9c1c3db6253c43c75d3582"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tzunghaor/settings-bundle/zipball/d3edc9ba7e8adba48fdda9c24501184f17c6a8bb",
-                "reference": "d3edc9ba7e8adba48fdda9c24501184f17c6a8bb",
+                "url": "https://api.github.com/repos/tzunghaor/settings-bundle/zipball/51863166cb5c17059f9c1c3db6253c43c75d3582",
+                "reference": "51863166cb5c17059f9c1c3db6253c43c75d3582",
                 "shasum": ""
             },
             "require": {
@@ -5669,9 +5669,9 @@
             "description": "Database persisted settings",
             "support": {
                 "issues": "https://github.com/tzunghaor/settings-bundle/issues",
-                "source": "https://github.com/tzunghaor/settings-bundle/tree/0.16"
+                "source": "https://github.com/tzunghaor/settings-bundle/tree/0.16.1"
             },
-            "time": "2025-06-20T15:49:06+00:00"
+            "time": "2025-08-03T14:33:30+00:00"
         },
         {
             "name": "webmozart/assert",

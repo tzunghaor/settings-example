@@ -35,14 +35,16 @@ class ProjectScopeProvider implements ScopeProviderInterface
 
         // if $subject is string, then it is already a scope name
         if (is_string($subject)) {
-            return new Item($subject);
+            [$prefix, $identifier] = explode('-', $subject, 2);
+
+            return new Item($subject, $identifier);
         }
 
         // we can provide the scope of User and Project
         if ($subject instanceof User) {
-            return new Item(self::PREFIX_USER . '-' . $subject->getId());
+            return new Item(self::PREFIX_USER . '-' . $subject->getId(), $subject->getId());
         } elseif ($subject instanceof Project) {
-            return new Item(self::PREFIX_PROJECT . '-' . $subject->getName());
+            return new Item(self::PREFIX_PROJECT . '-' . $subject->getName(), $subject->getName());
         }
 
         throw new \InvalidArgumentException('Cannot determine scope');
@@ -157,7 +159,7 @@ class ProjectScopeProvider implements ScopeProviderInterface
             throw new RuntimeException('There is no default project scope without authenticated user.');
         }
 
-        return new Item(self::PREFIX_USER . '-' . $userId);
+        return new Item(self::PREFIX_USER . '-' . $userId, $userId);
     }
 
 }

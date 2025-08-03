@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Tzunghaor\SettingsBundle\Attribute\Setting;
 use Tzunghaor\SettingsBundle\Attribute\SettingSection;
 
-#[SettingSection(extra: ["color" => "#ddff55"])]
+#[SettingSection(label: "Display Settings", extra: ["color" => "#ddff55"])]
 class DisplaySettings
 {
     #[Assert\PositiveOrZero(message: "padding should not be negative")]
@@ -38,7 +38,7 @@ class DisplaySettings
     /**
      * @var string[]
      */
-    #[Setting(enum: ["bottom", "top", "left", "right"])]
+    #[Setting(enum: ["bottom", "top", "left", "right"], /* formOptions: ['attr' => ['size' => '4', 'style' => 'min-height: 4em; height: auto; max-height: 7em;']] */)]
     private array $borders;
 
     #[Setting(label: 'Background Color', formType: ColorType::class)]
